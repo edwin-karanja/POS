@@ -14,7 +14,7 @@ Thumbs.db
 
 # composer vendor dir
 /vendor
-/node-modules
+/node_modules
 
 # composer itself is not needed
 composer.phar

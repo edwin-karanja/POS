@@ -72,6 +72,7 @@ $dashboard = app(\HieuLe\LaravelDashboard\Dashboard::PLUGIN_NAME);
     <!-- Scripts -->
 
     @include('laravel_dashboard.partials.foot_assets')
+    @yield('scripts')
 
 </body>
 </html>

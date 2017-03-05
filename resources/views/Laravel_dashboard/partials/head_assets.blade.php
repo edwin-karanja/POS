@@ -9,7 +9,7 @@
 
 <!-- Admin LTE CSS -->
 <link rel="stylesheet"
-      href="{{ asset('vendor/' . \HieuLe\LaravelDashboard\Dashboard::PLUGIN_NAME . '/dist/css/AdminLTE.min.css') }}"/>
+      href="{{ asset('vendor/' . \HieuLe\LaravelDashboard\Dashboard::PLUGIN_NAME . '/dist/css/AdminLTE.css') }}"/>
 
 <!-- Admin LTE skin CSS -->
 <link rel="stylesheet"
