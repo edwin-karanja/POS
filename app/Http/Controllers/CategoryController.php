@@ -2,84 +2,47 @@
 
 namespace App\Http\Controllers;
 
-use App\Category;
 use Validator;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class CategoryController extends Controller
 {
-    public function __construct()
+    protected $category;
+
+    public function __construct(Category $category)
     {
-        $this->middleware('auth');
-
-        $this->middleware('menu');
-
+        parent::__construct();
+        $this->middleware(['auth', 'menu']);
         app('laravel_dashboard')->setPageTitle('POS | Categories');
+        $this->category = $category;
     }
 
     public function categories()
     {
         return view('categories');
     }
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
     {
         return Category::all();
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|min:5|unique:categories',
+            'description' => 'sometimes|min:10'
         ])->validate();
 
-        $category = new Category();
-        $category->name = $request->name;
-        $category->description = $request->description;
-        $category->save();
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+        try {
+            $this->category->createCategory($request);
+            return response()->json(['msg' => "Category {$this->category->category->name} created!"]);
+        } catch(\Exception $e) {
+            // Log an exception  and return an error message to the user;
+            return response()->json(['error' =>true, 'msg' => 'Unable to create new Category, try later.']);
+        }
     }
 
     /**
@@ -88,28 +51,31 @@ class CategoryController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $category = Category::findOrFail($id);
+        $category = $this->category->find($id);
+        $oldName = $category->name;
         $validator = Validator::make($request->all(), [
             'name' => [
                 'required', Rule::unique('categories')->ignore($category->id)
             ]
         ])->validate();
 
-        $category->name = $request->name;
-        $category->description = $request->description;
-        $category->update();
+        try {
+            $this->category->updateCategory($request);
+            return response()->json(['msg' => "Updated category {$oldName} to {$category->name}"]);
+        } catch (\Exception $e) {
+            // Log an exception  and return an error message to the user;
+            return response()->json(['error' =>true, 'msg' => "Unable to update category {$category->name}, try later."]);
+        }
     }
 
-    /**
-     * Delete the category and update the
-     * category_id field in the items table.
-     */
     public function destroy($id)
     {
-        $category = Category::findOrFail($id);
-
-        $category->items()->update(['category_id' => null]);
-
-        $category->delete();
+        try {
+            $this->category->deleteCategory($id);
+            return response()->json(['msg' => "Category {$this->category->category->name} deleted!"]);
+        } catch (\Exception $e) {
+            // Log exception
+            return response()->json(['msg' => "Unable to delete Category {$this->category->category->name}."]);
+        }
     }
 }
