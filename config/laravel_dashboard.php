@@ -13,7 +13,7 @@ return [
     /*
      * Have a collapsed sidebar upon loading
      */
-    'sidebar_collapse'      => false,
+    'sidebar_collapse'      => true,
 
     /*
      * Show mini sidebar when collapsed
@@ -36,7 +36,7 @@ return [
      * + black
      * + black-light
      */
-    'skin'                  => 'blue',
+    'skin'                  => 'green',
 
     /*
      * The color theme of the control sidebar, available values are 'dark' or 'light'.

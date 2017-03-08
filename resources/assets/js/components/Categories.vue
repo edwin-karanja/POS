@@ -1,165 +1,199 @@
 <style scoped>
     #categories tr {
         font-style: "Fira Code";
-        
     }
-
-    #bold {
-        
-    }
+    
+    #bold {}
 </style>
 
 <template>
-
-    <div class="col-md-10 col-md-offset-1">
-        <div class="alert alert-info" v-if="alert">
-            <a href="#" class="close" data-dismiss="alert" aria-label="close" @click="clear">&times;</a>
-            <strong>Info!</strong> {{ alert_message }}.
-        </div>
-
-        <div class="alert alert-success" v-if="alert_success">
-            <a href="#" class="close" data-dismiss="alert" aria-label="close" @click="clear">&times;</a>
-            <strong>Success!</strong> {{ alert_message }}.
-        </div>
-        <div class="box box-primary">
-            <div class="box-header with-border">
-            <h2 class="box-title">Stock Categories</h2> <button class="btn btn-success pull-right" @click="showCreateCategoryModal"><i class="fa fa-plus"></i> Add Category</button></div>
-
-            <div class="panel-body">
-                <div class="well" v-if="categories.length === 0">
-                    No category created yet. <a href="" @click.prevent="showCreateCategoryModal">Create a category?</a>
+    <div class="container-fluid">
+        <div class="alerts">
+            <div class="col-md-10 col-md-offset-1">
+                <div class="alert alert-info" v-if="alert">
+                    <a href="#" class="close" data-dismiss="alert" aria-label="close" @click="clear">&times;</a>
+                    <strong>Info!</strong> {{ alert_message }}.
                 </div>
 
-                <table id="categories" class="table table-hover table-condensed" v-if="categories.length > 0">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Description</th>
-                            <th>Last Update</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(category, index) in categories">
-                            <td>{{ index + 1 }}</td>
-                            <td id="bold">{{ category.name }}</td>
-                            <td>{{ category.description }}</td>
-                            <td>{{ category.updated_at }}</td>
-                            <td>
-                                <button class="btn btn-sm btn-info" @click="edit(category)" title="Edit Category" data-toggle="tooltip" data-placement="top"><i class="fa fa-pencil-square"></i></button>
-                                <button class="btn btn-sm btn-danger" @click="deleteConfirm(category)" title="Delete Category" data-toggle="tooltip" data-placement="top"><i class="fa fa-close"></i></button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="alert alert-success" v-if="alert_success">
+                    <a href="#" class="close" data-dismiss="alert" aria-label="close" @click="clear">&times;</a>
+                    <strong>Success!</strong> {{ alert_message }}.
+                </div>
             </div>
+        </div>
+        <!-- Bootstrap Alerts -->
+
+        <div class="row">
+            <div class="col-md-10">
+                <div class="box box-primary">
+                    <div class="box-header with-border">
+                        <h2 class="box-title">Stock Categories</h2> <button class="btn btn-success pull-right" @click="showCreateCategoryModal"><i class="fa fa-plus"></i> Add Category</button></div>
+
+                    <div class="panel-body">
+                        <div class="well" v-if="categories.length === 0">
+                            No category created yet. <a href="" @click.prevent="showCreateCategoryModal">Create a category?</a>
+                        </div>
+
+                        <table id="categories" class="table table-hover table-condensed" v-if="categories.length > 0">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Last Update</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(category, index) in categories">
+                                    <td>{{ index + 1 }}</td>
+                                    <td id="bold">{{ category.name }}</td>
+                                    <td>{{ category.description }}</td>
+                                    <td>{{ category.updated_at }}</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-info" @click="edit(category)" title="Edit Category" data-toggle="tooltip" data-placement="top"><i class="fa fa-pencil-square"></i></button>
+                                        <button class="btn btn-sm btn-danger" @click="deleteConfirm(category)" title="Delete Category" data-toggle="tooltip" data-placement="top"><i class="fa fa-close"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- Col-md-10 -->
+
+            <div class="col-md-2">
+                <div class="box box-primary">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Statistics</h3>
+
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                            <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
+                        </div>
+                    </div>  <!-- /.box-header -->
+
+                    <div class="box-body">
+                        Body....
+                    </div>  <!-- /.box-body -->
+
+                    <div class="box-footer">
+                        Footer...
+                    </div>
+                </div>   <!-- /.box -->
+
+            </div>  <!-- Col-md-2 -->
         </div>
 
         <!-- Create New Category Modal -->
         <div class="modal fade" id="create-category-modal">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header modal-header-info">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-                <h4 class="modal-title">Create Category</h4>
-                <span class="" style="">Fields with the asterisk(*) are required!</span>
-              </div>
-              <div class="modal-body">
-                <!-- Form Errors -->
-                <div class="alert alert-danger" v-if="createForm.errors.length > 0">
-                    <p><strong>Whoops!</strong> Something went wrong!</p>
-                    <br>
-                    <ul>
-                        <li v-for="error in createForm.errors">
-                            {{ error }}
-                        </li>
-                    </ul>
-                </div>
-                <form class="form-horizontal" role="form" onsubmit="return false">
-                    <div class="form-group">
-                        <label for="name" class="control-label col-sm-2">Name *</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" id="name" @keyup.enter="store" v-model="createForm.name">
-                        </div>
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header modal-header-info">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title">Create Category</h4>
+                        <span class="" style="">Fields with the asterisk(*) are required!</span>
                     </div>
+                    <div class="modal-body">
+                        <!-- Form Errors -->
+                        <div class="alert alert-warning" v-if="createForm.errors.length > 0">
+                            <p><strong>Whoops!</strong> Something went wrong!</p>
+                            <ul>
+                                <li v-for="error in createForm.errors">
+                                    {{ error }}
+                                </li>
+                            </ul>
+                        </div>
+                        <form class="form-horizontal" role="form" onsubmit="return false">
+                            <div class="form-group">
+                                <label for="name" class="control-label col-sm-2">Name *</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="name" @keyup.enter="store" v-model="createForm.name">
+                                </div>
+                            </div>
 
-                    <div class="form-group">
-                        <label for="description" class="control-label col-sm-2">Description</label>
-                        <div class="col-sm-10">
-                            <textarea class="form-control" rows="4" v-model="createForm.description"></textarea>
-                        </div>                     
-                    </div>   
-                </form>
-                
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" @click="store">
+                            <div class="form-group">
+                                <label for="description" class="control-label col-sm-2">Description</label>
+                                <div class="col-sm-10">
+                                    <textarea class="form-control" rows="4" v-model="createForm.description"></textarea>
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" @click="store">
                     <i class="fa fa-plus" v-show="create_icon"></i>
                     <i class="fa fa-spinner fa-spin" v-show="button_spinner"></i> Add Category
                 </button>
-               
-                
-              </div>
-            </div><!-- /.modal-content -->
-          </div><!-- /.modal-dialog -->
-        </div><!-- /.modal -->
+
+
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- /.modal -->
 
 
         <!-- Edit Category Modal -->
         <div class="modal fade" id="edit-category-modal">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header modal-header-info">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header modal-header-info">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
                 </button>
-                <h4 class="modal-title">Edit Category</h4>
-                <span class="" style="">Fields with the asterisk(*) are required!</span>
-              </div>
-              <div class="modal-body">
-                <!-- Form Errors -->
-                <div class="alert alert-danger" v-if="editForm.errors.length > 0">
-                    <p><strong>Whoops!</strong> Something went wrong!</p>
-                    <br>
-                    <ul>
-                        <li v-for="error in editForm.errors">
-                            {{ error }}
-                        </li>
-                    </ul>
-                </div>
-                <form class="form-horizontal" role="form" onsubmit="return false">
-                    <div class="form-group">
-                        <label for="name" class="control-label col-sm-2">Name *</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" id="name" @keyup.enter="update" v-model="editForm.name">
-                        </div>
+                        <h4 class="modal-title">Edit Category</h4>
+                        <span class="" style="">Fields with the asterisk(*) are required!</span>
                     </div>
+                    <div class="modal-body">
+                        <!-- Form Errors -->
+                        <div class="alert alert-danger" v-if="editForm.errors.length > 0">
+                            <p><strong>Whoops!</strong> Something went wrong!</p>
+                            <br>
+                            <ul>
+                                <li v-for="error in editForm.errors">
+                                    {{ error }}
+                                </li>
+                            </ul>
+                        </div>
+                        <form class="form-horizontal" role="form" onsubmit="return false">
+                            <div class="form-group">
+                                <label for="name" class="control-label col-sm-2">Name *</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="name" @keyup.enter="update" v-model="editForm.name">
+                                </div>
+                            </div>
 
-                    <div class="form-group">
-                        <label for="description" class="control-label col-sm-2">Description</label>
-                        <div class="col-sm-10">
-                            <textarea class="form-control" rows="4" v-model="editForm.description"></textarea>
-                        </div>                     
-                    </div>   
-                </form>
-                
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" @click="update">
+                            <div class="form-group">
+                                <label for="description" class="control-label col-sm-2">Description</label>
+                                <div class="col-sm-10">
+                                    <textarea class="form-control" rows="4" v-model="editForm.description"></textarea>
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" @click="update">
                     <i class="fa fa-pencil-square-o" v-show="create_icon"></i>
                     <i class="fa fa-spinner fa-spin" v-show="button_spinner"></i> Update Category
                 </button>
-               
-                
-              </div>
-            </div><!-- /.modal-content -->
-          </div><!-- /.modal-dialog -->
-        </div><!-- /.modal -->
+
+
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- /.modal -->
 
         <!-- Delete Confirmation Modal -->
         <div class="modal fade" id="delete-confirmation-modal">
@@ -185,12 +219,12 @@
         </div>
 
     </div>
-
+    <!-- Main Container Fluid  -->
 </template>
 
 <script>
     export default {
-        data () {
+        data() {
             return {
                 categories: [],
                 alert: false,
@@ -223,7 +257,7 @@
         },
 
         computed: {
-            formatedTime: function(time) {
+            formatedTime: function (time) {
                 return moment(time).format("ddd,MMM Do YYYY");
             }
         },
@@ -248,15 +282,12 @@
                     layout: 'topCenter',
                     theme: 'relax',
                     type: type,
-                    text: '<p>' + type[0].toUpperCase() + type.substring(1) + '!</p>' + '<p>' + text +'</p>',
+                    text: '<p>' + type[0].toUpperCase() + type.substring(1) + '!</p>' + '<p>' + text + '</p>',
                     timeout: 5000,
-                    progressBar:true
+                    progressBar: true
                 });
             },
 
-            /**
-             * Get all the categories.
-             */
             getCategories() {
                 this.$http.get('/category')
                     .then(response => {
@@ -268,15 +299,12 @@
             modDate() {
                 if (this.categories.length > 0) {
                     for (var i = 0; i < this.categories.length; i++) {
-                        this.categories[i].updated_at =  moment(this.categories[i].updated_at).fromNow();
+                        this.categories[i].updated_at = moment(this.categories[i].updated_at).fromNow();
                     }
                 }
-                
+
             },
 
-            /**
-             * Show the Create category Modal
-             */
             showCreateCategoryModal() {
                 this.createForm.errors = [];
                 this.createForm.name = '';
@@ -286,15 +314,12 @@
             },
 
             clear() {
-                
+
             },
 
-            /**
-             * Save the category
-             */
             store() {
                 this.persistCategory(
-                    '/category', 'post', 
+                    '/category', 'post',
                     this.createForm, '#create-category-modal'
                 );
             },
@@ -330,7 +355,7 @@
                         this.notify('information', response.data.msg);
                     })
 
-                    $('#delete-confirmation-modal').modal('hide');
+                $('#delete-confirmation-modal').modal('hide');
             },
 
             persistCategory(uri, method, form, modal) {
@@ -346,10 +371,6 @@
                         var categoryName = form.name;
 
                         form = {};
-
-//                        form.name = '';
-//                        form.description = '';
-//                        form.errors = [];
 
                         // Display the add icon and hide the spinner
                         this.create_icon = true;
@@ -379,4 +400,5 @@
         }
 
     }
+
 </script>
