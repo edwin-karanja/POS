@@ -6,6 +6,7 @@
 
 <!-- app.css  -->
 <link rel="stylesheet" type="text/css" href="/css/sweetalert2.min.css">
+<link rel="stylesheet" type="text/css" href="/css/parsley.css">
 
 <!-- Admin LTE CSS -->
 <link rel="stylesheet"

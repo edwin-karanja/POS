@@ -243,6 +243,17 @@
                 // $('#categories').DataTable();
             },
 
+            notify(type, text) {
+                noty({
+                    layout: 'topCenter',
+                    theme: 'relax',
+                    type: type,
+                    text: '<p>' + type[0].toUpperCase() + type.substring(1) + '!</p>' + '<p>' + text +'</p>',
+                    timeout: 5000,
+                    progressBar:true
+                });
+            },
+
             /**
              * Get all the categories.
              */
@@ -316,8 +327,7 @@
                 this.$http.delete('/category/' + category.id)
                     .then(response => {
                         this.getCategories();
-                        this.alert_message = '[' + category.name + '] Deleted';
-                        this.alert = true;
+                        this.notify('information', response.data.msg);
                     })
 
                     $('#delete-confirmation-modal').modal('hide');
@@ -335,9 +345,11 @@
                         this.getCategories();
                         var categoryName = form.name;
 
-                        form.name = '';
-                        form.description = '';
-                        form.errors = [];
+                        form = {};
+
+//                        form.name = '';
+//                        form.description = '';
+//                        form.errors = [];
 
                         // Display the add icon and hide the spinner
                         this.create_icon = true;
@@ -345,13 +357,10 @@
 
                         // Set The alert
                         if (method == 'post') {
-                            this.alert_message = 'New Category created';
-                            this.alert_success = true;
+                            this.notify('success', response.data.msg);
                         } else {
-                            this.alert_message = 'Category [' + categoryName + '] created';
-                            this.alert = true;
+                            this.notify('success', response.data.msg);
                         }
-                        
 
                         $(modal).modal('hide');
                     })

@@ -15,6 +15,7 @@
     <link href="/css/app.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="/css/main.css">
     <link rel="stylesheet" type="text/css" href="/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/parsley.css">
     {{-- <link rel="stylesheet" type="text/css" href="/css/dataTables.bootstrap.min.css"> --}}
 
     <!-- Scripts -->
@@ -98,5 +99,6 @@
     <!-- Scripts -->
 
     <script src="/js/app.js"></script>
+    <script src="/js/parsley.js"></script>
 </body>
 </html>
