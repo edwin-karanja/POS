@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Cost;
-use App\Item;
+use App\Models\Cost;
+use App\Models\Item;
 use Validator;
 use Illuminate\Http\Request;
 

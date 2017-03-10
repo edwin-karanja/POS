@@ -29,6 +29,7 @@
     25 => 'App\\Providers\\RouteServiceProvider',
     26 => 'Maatwebsite\\Excel\\ExcelServiceProvider',
     27 => 'HieuLe\\LaravelDashboard\\LaravelDashboardServiceProvider',
+    28 => 'Spatie\\Activitylog\\ActivitylogServiceProvider',
   ),
   'eager' => 
   array (
@@ -48,6 +49,7 @@
     13 => 'App\\Providers\\RouteServiceProvider',
     14 => 'Maatwebsite\\Excel\\ExcelServiceProvider',
     15 => 'HieuLe\\LaravelDashboard\\LaravelDashboardServiceProvider',
+    16 => 'Spatie\\Activitylog\\ActivitylogServiceProvider',
   ),
   'deferred' => 
   array (

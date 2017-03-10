@@ -31,7 +31,7 @@ textarea.parsley-error {
 
 .parsley-errors-list.filled {
     opacity: 1;
-    color: #8a2d2d;
+    color: #f00b2c;
     font-weight: bold;
     font-style: italic;
 }

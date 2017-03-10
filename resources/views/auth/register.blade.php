@@ -22,7 +22,7 @@
                                            data-parsley-minLength-message="Name cannot be less than 5 characters."
                                            data-parsley-maxLength="20"
                                            data-parsley-pattern="\w+[a-zA-Z] \w+[a-zA-Z]"
-                                           data-parsley-pattern-message="Name must be 2 words long without any digits"
+                                           data-parsley-pattern-message="Name must be 2 words long without any digits "
                                            data-parsley-maxLength-message="Name cannot be more than 20 characters."
                                            data-parsley-trigger="change focusout"
                                     >

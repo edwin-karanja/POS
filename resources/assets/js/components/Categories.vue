@@ -3,7 +3,7 @@
         font-style: "Fira Code";
     }
     
-    #bold {}
+    
 </style>
 
 <template>
@@ -94,23 +94,26 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                         <h4 class="modal-title">Create Category</h4>
-                        <span class="" style="">Fields with the asterisk(*) are required!</span>
+                        <span class="">Fields with the asterisk(*) are required!</span>
                     </div>
                     <div class="modal-body">
                         <!-- Form Errors -->
-                        <div class="alert alert-warning" v-if="createForm.errors.length > 0">
-                            <p><strong>Whoops!</strong> Something went wrong!</p>
+                        <div class="alert alert-danger" v-if="createForm.errors.length > 0">
                             <ul>
                                 <li v-for="error in createForm.errors">
                                     {{ error }}
                                 </li>
                             </ul>
                         </div>
-                        <form class="form-horizontal" role="form" onsubmit="return false">
+                        <form class="form-horizontal" role="form" onsubmit="return false" id="createCategoryForm">
                             <div class="form-group">
                                 <label for="name" class="control-label col-sm-2">Name *</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="name" @keyup.enter="store" v-model="createForm.name">
+                                    <input type="text" class="form-control" id="name" @keyup.enter="store" v-model="createForm.name"
+                                        required
+                                        data-parsley-required-message="Category name is required."
+                                        data-parsley-trigger="change focusout"
+                                    >
                                 </div>
                             </div>
 
@@ -126,18 +129,15 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         <button type="button" class="btn btn-primary" @click="store">
-                    <i class="fa fa-plus" v-show="create_icon"></i>
-                    <i class="fa fa-spinner fa-spin" v-show="button_spinner"></i> Add Category
-                </button>
+                            <i class="fa fa-plus" v-show="create_icon"></i>
+                            <i class="fa fa-spinner fa-spin" v-show="button_spinner"></i> Add Category
+                        </button>
 
 
                     </div>
-                </div>
-                <!-- /.modal-content -->
-            </div>
-            <!-- /.modal-dialog -->
-        </div>
-        <!-- /.modal -->
+                </div>  <!-- /.modal-content -->
+            </div>  <!-- /.modal-dialog -->
+        </div>  <!-- /.modal -->
 
 
         <!-- Edit Category Modal -->
@@ -154,8 +154,6 @@
                     <div class="modal-body">
                         <!-- Form Errors -->
                         <div class="alert alert-danger" v-if="editForm.errors.length > 0">
-                            <p><strong>Whoops!</strong> Something went wrong!</p>
-                            <br>
                             <ul>
                                 <li v-for="error in editForm.errors">
                                     {{ error }}
@@ -274,6 +272,8 @@
                     $('#name').focus();
                 });
 
+                $('#createCategoryForm').parsley();
+
                 // $('#categories').DataTable();
             },
 
@@ -309,6 +309,7 @@
                 this.createForm.errors = [];
                 this.createForm.name = '';
                 this.createForm.description = '';
+                $('#createCategoryForm').parsley().reset();
 
                 $('#create-category-modal').modal('show');
             },

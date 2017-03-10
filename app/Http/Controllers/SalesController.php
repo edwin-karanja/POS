@@ -4,22 +4,19 @@ namespace App\Http\Controllers;
 
 use DB;
 use Auth;
-use App\Item;
-use App\Sale;
+use App\Models\Item;
+use App\Models\Sale;
 use Validator;
-use App\SaleItems;
-use App\Customer;
-use App\Inventory;
+use App\Models\SaleItems;
+use App\Models\Customer;
+use App\Models\Inventory;
 use Illuminate\Http\Request;
 
 class SalesController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
-
-        $this->middleware('menu');
-
+        $this->middleware(['auth', 'menu']);
         app('laravel_dashboard')->setPageTitle('POS | Sales');
     }
     /**
@@ -32,9 +29,7 @@ class SalesController extends Controller
         if ($request->ajax()) {
             return Sale::with('customer')->where('user_id', $userId)->latest()->limit(10)->get();
         }
-
         return view('sales');
-   
     }
 
     /**
@@ -42,7 +37,7 @@ class SalesController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        Validator::make($request->all(), [
             'customer_id' => 'required|numeric',
             'items.*.qtty' => 'required|numeric',
             'items.*.sprice' => 'required|numeric'

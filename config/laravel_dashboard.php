@@ -36,7 +36,7 @@ return [
      * + black
      * + black-light
      */
-    'skin'                  => 'green',
+    'skin'                  => 'blue-light',
 
     /*
      * The color theme of the control sidebar, available values are 'dark' or 'light'.

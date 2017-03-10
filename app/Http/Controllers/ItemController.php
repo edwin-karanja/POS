@@ -3,23 +3,22 @@
 namespace App\Http\Controllers;
 
 use Auth;
-use App\Item;
-use App\Cost;
 use Validator;
-use App\Inventory;
+use App\Models\Item;
+use App\Models\Cost;
+use App\Models\Inventory;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class ItemController extends Controller
 {
+    private $item;
 
-    public function __construct()
+    public function __construct(Item $item)
     {
-        $this->middleware('auth');
-
-        $this->middleware('menu');
-
-        app('laravel_dashboard')->setPageTitle('POS | Stocks');
+        $this->middleware(['auth', 'menu']);
+        app('laravel_dashboard')->setPageTitle('POS | Inventory');
+        $this->item = $item;
     }
 
     public function items()
@@ -27,49 +26,30 @@ class ItemController extends Controller
         return view('items');
     }
 
-
-    /**
-     * Get a listing of all the Inventory Items
-     * with their catgories.
-     */
     public function index()
     {
-        return Item::with('category')->get();
+        return $this->item->with('category')->get();
+        // dump($this->item->get(['*']));
     }
 
-    /**
-     * Persist a new Inventory Item into the database.
-     */
     public function store(Request $request)
     {
 
-        $validator = Validator::make($request->all(), [
+        Validator::make($request->all(), [
             'item_name' => 'required|unique:items',
             'cost_price' => 'required|numeric|not_in:0',
             'selling_price' => 'required|numeric|not_in:0',
             'quantity' => 'required|numeric|not_in:0',
+            'category' => 'required'
         ])->validate();
 
-        // Persist the item to the database.
-        $item = new Item();
-        $item->item_name = $request->item_name;
-        $item->upc_ean_isbn = $request->upc_ean_isbn;
-        $item->packaging = $request->packaging;
-        $item->description = $request->description;
-        $item->cost_price = $request->cost_price;
-        $item->selling_price = $request->selling_price;
-        $item->category_id = $request->category;
-        $item->quantity = $request->quantity;
-
-        $item->save();
-
-        // Add the quantity to the inventory table
-        $inventory = new Inventory();
-        $inventory->adjustment = $item->quantity ? $item->quantity : 0;
-        $inventory->comments = 'Initial Manual Entry';
-        $inventory->user_id = Auth::user()->id;
-
-        $item->inventory()->save($inventory);
+        try {
+            $item = $this->item->saveInventory($request);
+            return response()->json(['success' => true, 'msg' => "New Stock [{$item->item_name}] created."]);
+        } catch (\Exception $e) {
+            // Log message
+            return response()->json(['success' => false, 'msg' => "Unable to save new stock. Please try later."]);
+        }
     }
 
     /**
@@ -112,16 +92,16 @@ class ItemController extends Controller
     }
 
     /**
-     * SoftDelete The Item from the database.
+     * SoftDelete The Item from the database
+     * As wellas the prices associated with it.
      */
     public function destroy($id)
     {
-        // Delete The Item as well as its price history
-        $item = Item::findOrFail($id);
-
-        $item->delete();
-
-        $item->costs()->delete();
+        $item = $this->item->findById($id);
+        if ($item) {
+            $this->item->deleteStockAndPrice($id);
+            return response()->json(['success' => true, 'msg' =>"Item [{$item->item_name}] deleted."]);
+        }
     }
 
     /**

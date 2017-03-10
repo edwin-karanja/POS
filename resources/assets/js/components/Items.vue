@@ -128,13 +128,11 @@
                                   <span aria-hidden="true">&times;</span>
                                 </button>
                                 <h4 class="modal-title">Create Item</h4>
-                                <span class="" style="">Fields with the asterisk(*) are required!</span>
+                                <span class="text-danger">Fields with the asterisk(*) are required!</span>
                               </div>
                               <div class="modal-body">
                                 <!-- Form Errors -->
                                 <div class="alert alert-danger" v-if="createForm.errors.length > 0">
-                                    <p><strong>Whoops!</strong> Something went wrong!</p>
-                                    <br>
                                     <ul>
                                         <li v-for="error in createForm.errors">
                                             {{ error }}
@@ -150,7 +148,7 @@
                                             </div>
 
                                             <div class="form-group">
-                                                <label for="task">Item Name *</label>
+                                                <label for="task">Item Name <span class="text-danger">*</span></label>
                                                 <input type="text" class="form-control" id="item_name" @keyup.enter="store" v-model="createForm.item_name" placeholder="Item name">
                                             </div>
 
@@ -162,7 +160,7 @@
 
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label for="task">Cost Price *</label>
+                                                <label for="task">Cost Price <span class="text-danger">*</span></label>
                                                 <div class="input-group">
                                                     <div class="input-group-addon">Kshs</div>
                                                     <input type="number" class="form-control" id="cost_price" @keyup.enter="store" v-model="createForm.cost_price">
@@ -171,7 +169,7 @@
                                             </div>
 
                                             <div class="form-group">
-                                                <label for="task">Selling Price *</label>
+                                                <label for="task">Selling Price <span class="text-danger">*</span></label>
                                                 <div class="input-group">
                                                     <div class="input-group-addon">Kshs</div>
                                                     <input type="number" class="form-control" id="selling_price" @keyup.enter="store" v-model="createForm.selling_price">
@@ -196,7 +194,7 @@
                                         </div>
                                         <div class="col-md-4">
                                             <div class="form-group">
-                                                <label for="task">Category *</label>
+                                                <label for="task">Category <span class="text-danger">*</span></label>
                                                 <select v-model="createForm.category" class="form-control" >
                                                     <option value="">Select a category</option>
                                                     <option v-for="category in categories" v-bind:value="category.id">{{ category.name }}</option>
@@ -776,8 +774,7 @@
 
                 this.$http.delete('/item/' + item.id)
                     .then(response => {
-                        this.alert = true;
-                        this.alert_message = '[' + item.item_name + '] deleted successfully!';
+                        this.notify('information', response.data.msg);
                         this.getItems();
                     });
 
@@ -792,6 +789,17 @@
                 location.href = '/item/' + item.id;
             },
 
+            notify(type, text) {
+                noty({
+                    layout: 'topCenter',
+                    theme: 'relax',
+                    type: type,
+                    text: '<p>' + type[0].toUpperCase() + type.substring(1) + '!</p>' + '<p>' + text + '</p>',
+                    timeout: 5000,
+                    progressBar: true
+                });
+            },
+
             persistItem(method, uri, form, modal) {
                 form.errors = [];
 
@@ -801,34 +809,44 @@
 
                 this.$http[method](uri, form)
                     .then(response => {
-                        
+                        if (response.data.success == true) {
+                            form.upc_ean_isbn = '';
+                            form.item_name = '';
+                            form.description = '';
+                            form.packaging = '';
+                            form.cost_price = '';
+                            form.selling_price = '';
+                            form.quantity = '';
+                            form.errors = [];
+
+                            // Display the Button icon and Hide the Spinner
+                            this.create_icon = true;
+                            this.button_spinner= false;
+                            this.notify('success', response.data.msg);
+                        } else {
+                            this.create_icon = true;
+                            this.button_spinner= false;
+                            this.notify('error', response.data.msg);
+                        }
                         if (method === 'put') {
                             this.search();
                         } else {
                             this.getItems();
                         }
-
-                        form.upc_ean_isbn = '';
-                        form.item_name = '';
-                        form.description = '';
-                        form.packaging = '';
-                        form.cost_price = '';
-                        form.selling_price = '';
-                        form.quantity = '';
-                        form.errors = [];
-
-                        // Display the Button icon and Hide the Spinner
-                        this.create_icon = true;
-                        this.button_spinner= false;
-
                         $(modal).modal('hide');
-                        if (method == 'post') {
-                            this.alert_message = 'New Item Successfully added!';
-                            this.alert_success = true;
-                        } else {
-                            this.alert_message = 'Item updated!';
-                            this.alert = true;
-                        }
+                        
+                        
+
+                        
+
+                        
+                        // if (method == 'post') {
+                        //     this.alert_message = 'New Item Successfully added!';
+                        //     this.alert_success = true;
+                        // } else {
+                        //     this.alert_message = 'Item updated!';
+                        //     this.alert = true;
+                        // }
 
                     })
                     .catch(response => {

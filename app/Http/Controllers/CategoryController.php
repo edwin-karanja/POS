@@ -9,11 +9,10 @@ use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
 {
-    protected $category;
+    private $category;
 
     public function __construct(Category $category)
     {
-        parent::__construct();
         $this->middleware(['auth', 'menu']);
         app('laravel_dashboard')->setPageTitle('POS | Categories');
         $this->category = $category;
@@ -21,12 +20,13 @@ class CategoryController extends Controller
 
     public function categories()
     {
-        return view('categories');
+        $cats = $this->category->with('itemCount')->get();
+        return view('categories')->with(['cats' => $cats]);
     }
 
     public function index()
     {
-        return Category::all();
+        return $this->category->get(['*']);
     }
 
     public function store(Request $request)
@@ -37,8 +37,8 @@ class CategoryController extends Controller
         ])->validate();
 
         try {
-            $this->category->createCategory($request);
-            return response()->json(['msg' => "Category {$this->category->category->name} created!"]);
+            $category = $this->category->createCategory($request);
+            return response()->json(['msg' => "Category {$category->name} created!"]);
         } catch(\Exception $e) {
             // Log an exception  and return an error message to the user;
             return response()->json(['error' =>true, 'msg' => 'Unable to create new Category, try later.']);
@@ -51,31 +51,34 @@ class CategoryController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $category = $this->category->find($id);
-        $oldName = $category->name;
-        $validator = Validator::make($request->all(), [
+        $category = $this->category->findById($id);
+        Validator::make($request->all(), [
             'name' => [
                 'required', Rule::unique('categories')->ignore($category->id)
             ]
         ])->validate();
 
         try {
-            $this->category->updateCategory($request);
-            return response()->json(['msg' => "Updated category {$oldName} to {$category->name}"]);
+            $this->category->updateCategory($request, $id);
+            return response()->json(['success' => true, 'msg' => "Updated category {$category->name} to {$this->category->getColumn('name', $id)}"]);
         } catch (\Exception $e) {
             // Log an exception  and return an error message to the user;
-            return response()->json(['error' =>true, 'msg' => "Unable to update category {$category->name}, try later."]);
+            return response()->json(['success' =>false, 'msg' => "Unable to update category {$category->name}, try later."]);
         }
     }
 
     public function destroy($id)
     {
-        try {
-            $this->category->deleteCategory($id);
-            return response()->json(['msg' => "Category {$this->category->category->name} deleted!"]);
-        } catch (\Exception $e) {
-            // Log exception
-            return response()->json(['msg' => "Unable to delete Category {$this->category->category->name}."]);
+        $category = $this->category->findById($id);
+        if ($category) {
+            try {
+                $this->category->deleteCategory($id);
+                return response()->json(['success' => true, 'msg' => "Category {$category->name} deleted!"]);
+            } catch (\Exception $e) {
+                // Log exception
+                return response()->json(['success' => false, 'msg' => "Unable to delete Category {$category->name}."]);
+            }
         }
+        
     }
 }

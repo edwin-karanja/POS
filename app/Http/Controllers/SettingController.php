@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use Auth;
 use Excel;
-use App\User;
-use App\Item;
 use Validator;
-use App\Inventory;
+use App\Models\User;
+use App\Models\Item;
+use App\Models\Inventory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -15,10 +15,7 @@ class SettingController extends Controller
 {
     public function __construct()
     {
-    	$this->middleware('auth');
-
-        $this->middleware('menu');
-
+    	$this->middleware(['auth', 'menu']);
         app('laravel_dashboard')->setPageTitle('POS | Settings');
     }
 
@@ -29,7 +26,7 @@ class SettingController extends Controller
 
     public function uploadcsv(Request $request)
     {
-    	$validator = Validator::make($request->all(), [
+    	Validator::make($request->all(), [
     		'csv_file' => 'not_in:undefined|mimes:csv,xlsx,xls|max:4000'
     	])->validate();
 
@@ -71,7 +68,7 @@ class SettingController extends Controller
 
 
 
-			$validator = Validator::make($results->toArray(), [
+			Validator::make($results->toArray(), [
 				'*.upc_ean_isbn' => 'sometimes',
 				'*.item_name' => 'required|min:3|max:200|distinct',
 				'*.cost_price' => 'required|numeric|not_in:0',
