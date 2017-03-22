@@ -38,4 +38,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Sale::class);
     }
+
+    public function getNameAttribute($value)
+    {
+        return ucwords($value);
+    }
 }

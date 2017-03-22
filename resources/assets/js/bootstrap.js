@@ -19,7 +19,7 @@ require('./parsley.js');
 
 require('./app.min');
 
-window.swal = require('sweetalert2');
+// window.swal = require('sweetalert2');
 
 
 /**
